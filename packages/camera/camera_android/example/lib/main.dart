@@ -660,7 +660,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     final CameraController cameraController = CameraController(
       cameraDescription,
-      kIsWeb ? ResolutionPreset.max : ResolutionPreset.medium,
+      kIsWeb ? ResolutionPreset.max : ResolutionPreset.veryHigh,
       enableAudio: enableAudio,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
@@ -745,6 +745,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         });
         if (file != null) {
           showInSnackBar('Picture saved to ${file.path}');
+          Navigator.push(context, MaterialPageRoute<void>(builder: (BuildContext context) => Container(
+              child: Image.file(File(file.path))))
+          );
         }
       }
     });
