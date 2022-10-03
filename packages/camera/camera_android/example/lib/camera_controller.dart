@@ -280,6 +280,12 @@ class CameraController extends ValueNotifier<CameraValue> {
   Future<XFile> takePicture() async {
     value = value.copyWith(isTakingPicture: true);
     final XFile file = await CameraPlatform.instance.takePicture(_cameraId);
+
+    var decodedImage = await decodeImageFromList(await file.readAsBytes());
+    print("CAPTURED IMAGE RESOLUTION");
+    print(decodedImage.height);
+    print(decodedImage.width);
+
     value = value.copyWith(isTakingPicture: false);
     return file;
   }

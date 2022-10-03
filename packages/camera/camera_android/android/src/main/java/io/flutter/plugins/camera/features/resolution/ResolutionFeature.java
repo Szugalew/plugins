@@ -47,6 +47,7 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
    * @param cameraProperties Collection of characteristics for the current camera device.
    * @param resolutionPreset Platform agnostic enum containing resolution information.
    * @param cameraName Camera identifier of the camera for which to configure the resolution.
+   * @param activity Activity
    */
   public ResolutionFeature(
           CameraProperties cameraProperties,
@@ -255,30 +256,34 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
       try {
         CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics( String.valueOf(cameraId) );
         StreamConfigurationMap streamConfig = characteristics.get(
-                CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP
+                CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP // on API 31 and up there is a min resolution
         );
-        Size[] imageSizes = streamConfig.getOutputSizes( ImageFormat.PRIVATE );
-        int maxMegapixel = 0;
-        for(int i = 0; i < imageSizes.length; i++ ) {
-            Log.d("RESOLUTION", imageSizes[i].toString());
-            // find the largest resolution
-          /*if( imageSizes[i].getWidth()*imageSizes[i].getHeight() > maxMegapixel ) {
-            actualMaxResolution = imageSizes[ i ];
-            maxMegapixel = imageSizes[i].getWidth()*imageSizes[i].getHeight();
-          }*/
-            // override, instead of the largest, take the first 4 by 3 resolution with width > 1000
-          int width = imageSizes[i].getWidth();// seems like imageSizes[i].getWidth() > imageSizes[i].getHeight() is always true
-          int height = imageSizes[i].getHeight();
-            if (width > 1000
-                    && height > 1000
-                    && (Math.max(width, height) / Math.min(width, height)) <= (5 / 3)) {
-                if (actualMaxResolution == null || imageSizes[i].getWidth() < actualMaxResolution.getWidth()) {
-                    actualMaxResolution = imageSizes[i];
-                }
-            }
-        }
+        Size[] imageSizes = streamConfig.getOutputSizes( ImageFormat.JPEG ); // JPEG has the correct supported formats
 
-        Log.d( "RESOLUTION PICKED", actualMaxResolution.toString() );
+        int maxMegapixel = 0;
+        for (Size imageSize : imageSizes) {
+          Log.d("RESOLUTION", imageSize.toString());
+          if (imageSize.getWidth() * imageSize.getHeight() > maxMegapixel) {
+            actualMaxResolution = imageSize;
+            maxMegapixel = imageSize.getWidth() * imageSize.getHeight();
+          }
+        }
+        /*for (Size imageSize : imageSizes) {
+          Log.d( "RESOLUTION", imageSize.toString() );
+          int width = imageSize.getWidth();// seems like imageSizes[i].getWidth() > imageSizes[i].getHeight() is always true
+          int height = imageSize.getHeight();
+          if (width > 1000
+                  && height > 1000
+                  && (Math.max(width, height) / Math.min(width, height)) <= (5 / 3)) {
+            if (actualMaxResolution == null || imageSize.getWidth() < actualMaxResolution.getWidth()) {
+              actualMaxResolution = imageSize;
+            }
+          }
+        }*/
+
+        if (actualMaxResolution != null) {
+          Log.d( "RESOLUTION PICKED", actualMaxResolution.toString() );
+        }
         captureSize = actualMaxResolution;
       } catch( CameraAccessException e ) {}
     }

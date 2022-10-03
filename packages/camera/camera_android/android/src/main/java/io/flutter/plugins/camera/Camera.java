@@ -608,7 +608,8 @@ class Camera
     // This is the CaptureRequest.Builder that is used to take a picture.
     CaptureRequest.Builder stillBuilder;
     try {
-      stillBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+      stillBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);//Capture speed
+      stillBuilder.set(CaptureRequest.JPEG_QUALITY, (byte) 80);
     } catch (CameraAccessException e) {
       dartMessenger.error(flutterResult, "cameraAccess", e.getMessage(), null);
       return;
