@@ -979,7 +979,12 @@ class Camera
    */
   public void setFocusPoint(@NonNull final Result result, @Nullable Point point) {
     final FocusPointFeature focusPointFeature = cameraFeatures.getFocusPoint();
-    focusPointFeature.setValue(point);
+    try {
+      focusPointFeature.setValue(point);
+    } catch (AssertionError e) {
+      result.error("setFocusPointFailed", "Could not set focus point.", null);
+      return;
+    }
     focusPointFeature.updateBuilder(previewRequestBuilder);
 
     refreshPreviewCaptureSession(
