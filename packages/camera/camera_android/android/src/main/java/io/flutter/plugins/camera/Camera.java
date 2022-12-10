@@ -1180,10 +1180,11 @@ class Camera
   }
 
   private void closeCaptureSession() {
-    if (captureSession != null) {
+    final CameraCaptureSession captureSessionCopy = captureSession;
+    if (captureSessionCopy != null) {
       Log.i(TAG, "closeCaptureSession");
 
-      captureSession.close();
+      captureSessionCopy.close();
       captureSession = null;
     }
   }
