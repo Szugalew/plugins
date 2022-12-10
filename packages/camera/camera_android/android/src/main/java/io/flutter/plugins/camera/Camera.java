@@ -456,21 +456,27 @@ class Camera
           }
         };
 
-    // Start the session.
-    if (VERSION.SDK_INT >= VERSION_CODES.P) {
-      // Collect all surfaces to render to.
-      List<OutputConfiguration> configs = new ArrayList<>();
-      configs.add(new OutputConfiguration(flutterSurface));
-      for (Surface surface : remainingSurfaces) {
-        configs.add(new OutputConfiguration(surface));
+    try {
+      // Start the session.
+      if (VERSION.SDK_INT >= VERSION_CODES.P) {
+        // Collect all surfaces to render to.
+        List<OutputConfiguration> configs = new ArrayList<>();
+        configs.add(new OutputConfiguration(flutterSurface));
+        for (Surface surface : remainingSurfaces) {
+          configs.add(new OutputConfiguration(surface));
+        }
+        createCaptureSessionWithSessionConfig(configs, callback);
+      } else {
+        // Collect all surfaces to render to.
+        List<Surface> surfaceList = new ArrayList<>();
+        surfaceList.add(flutterSurface);
+        surfaceList.addAll(remainingSurfaces);
+        createCaptureSession(surfaceList, callback);
       }
-      createCaptureSessionWithSessionConfig(configs, callback);
-    } else {
-      // Collect all surfaces to render to.
-      List<Surface> surfaceList = new ArrayList<>();
-      surfaceList.add(flutterSurface);
-      surfaceList.addAll(remainingSurfaces);
-      createCaptureSession(surfaceList, callback);
+    } catch (IllegalStateException e) {
+      // Catch the exception when the CameraDevice was already closed
+    } catch (IllegalArgumentException e) {
+      // Catch the exception when the Surface was abandoned
     }
   }
 
