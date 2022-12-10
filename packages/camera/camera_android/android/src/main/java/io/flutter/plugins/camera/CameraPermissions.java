@@ -105,7 +105,7 @@ final class CameraPermissions {
       }
 
       alreadyCalled = true;
-      if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+      if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
         callback.onResult(CAMERA_ACCESS_DENIED, CAMERA_ACCESS_DENIED_MESSAGE);
       } else if (grantResults.length > 1 && grantResults[1] != PackageManager.PERMISSION_GRANTED) {
         callback.onResult(AUDIO_ACCESS_DENIED, AUDIO_ACCESS_DENIED_MESSAGE);
